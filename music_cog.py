@@ -32,10 +32,20 @@ class Music(commands.Cog):
         else:
             await ctx.send("Não estas num canad de voz")
 
+    @commands.command(name="volume", aliases=["v", "vol"], help="Comando para baixar o volume de 0 a 100")
+    async def volume(self, ctx: commands.Context, volume):
+        if self.vc and (self.is_playing or self.is_paused):
+            volume = int(volume)
+            volume = volume / 100
+            self.vc.source.volume = volume
+        else:
+            await ctx.send("Não estou em nenhum canal agora")
+
     @commands.command(name="leave", aliases=["l"], help="Comando para o bot sair do canal de voz")
     async def leave(self, ctx: commands.Context):
         if ctx.voice_client:
             await ctx.voice_client.disconnect()
+            self.vc = None
         else:
             await ctx.send("Não estou num canal de voz")
 
@@ -50,6 +60,7 @@ class Music(commands.Cog):
             self.is_paused = False
 
             self.vc.play(discord.FFmpegPCMAudio(song, **self.FFMPEGPCMAUDIO), after=lambda e: self.play_next())
+            self.vc.source = discord.PCMVolumeTransformer(self.vc.source, 0.2)
         else:
             self.is_playing = False
             self.is_paused = False
@@ -96,6 +107,7 @@ class Music(commands.Cog):
             song = self.search_music(song_url)
             if song:
                 self.vc.play(discord.FFmpegPCMAudio(song, **self.FFMPEGPCMAUDIO), after=lambda e: self.play_next())
+                self.vc.source = discord.PCMVolumeTransformer(self.vc.source, 0.5)
                 self.is_playing = True
 
     @commands.command(name="addqueue", aliases=["aq"], help="Adiciona uma musica à fila de espera")
