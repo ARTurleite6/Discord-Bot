@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 from music_cog import Music
+import os
+from dotenv import load_dotenv
 
 
 class Bot(commands.Bot):
@@ -28,8 +30,10 @@ class Bot(commands.Bot):
 
 
 def main():
+    load_dotenv()
+    token = os.getenv("TOKEN")
     bot = Bot()
-    bot.run('OTg0NTcwMzcxMTYyMzc0MTg2.GEoZ4X.V4mPXIb46uufP7-obt_7SawVm5I5tmSOMy_ZP4')
+    bot.run(token)
 
 
 if __name__ == "__main__":
